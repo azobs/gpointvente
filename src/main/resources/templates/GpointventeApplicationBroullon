@@ -1,0 +1,40 @@
+entRepository.deleteAll();
+            Stream.of("C2PSI Ets CommerceGeneral", "C3PSI SARL GrandBazar", "C4PSI SA SuperGrandBazar").forEach(c -> {
+                entRepository.save(new Entreprise(c.split(" ")[0], c.split(" ")[1],
+                        c.split(" ")[2], " ", "  ", " ", " ",
+                        new ArrayList<Pointvente>()));
+            });
+            entRepository.findAll().forEach(System.out::println);
+
+            adresseRepository.deleteAll();
+            Stream.of("Adr1 678470262 676170067 693281002 cg@gmail.com ndobo douala cameroun",
+                    "Adr2 679470262 676179067 693281012 gb@gmail.com carrefourMutzig douala cameroun").forEach(adr -> {
+                adresseRepository.save(new Adresse(adr.split(" ")[0], adr.split(" ")[1],
+                        adr.split(" ")[2], adr.split(" ")[3], adr.split(" ")[4],
+                        adr.split(" ")[5], adr.split(" ")[6], adr.split(" ")[7]," "));
+            });
+
+            pvRepository.deleteAll();
+            Entreprise e1 = entRepository.findById("C2PSI").get();
+            List<Adresse> listofAdresseSave = adresseRepository.findAll();
+            if (!listofAdresseSave.isEmpty() && listofAdresseSave.size()>=2) {
+                System.out.println("ON A RETROUVE LES ADRESSES ENREGISTREES DANS LA BD");
+                Stream.of("PV1 Boutique1 PVC2PSI1", "PV2 Boutique2 PVC2PSI2").forEach(name -> {
+                    Pointvente pv = pvRepository.save(new Pointvente(name.split(" ")[0],
+                            name.split(" ")[1], name.split(" ")[2], e1, listofAdresseSave.get(0)));
+                    e1.getListofPointvente().add(pv);
+                    entRepository.save(e1);
+                });
+
+                Entreprise e2 = entRepository.findById("C3PSI").get();
+                Stream.of("PV3 Boutique3 PVC3PSI3", "PV4 Boutique4 PVC3PSI4").forEach(name -> {
+                    Pointvente pv = pvRepository.save(new Pointvente(name.split(" ")[0],
+                            name.split(" ")[1], name.split(" ")[2], e2, listofAdresseSave.get(1)));
+                    e2.getListofPointvente().add(pv);
+                    entRepository.save(e2);
+                });
+            }
+            else {
+                System.out.println("AUCUNE ADRESSE N'A ETE ENREGISTRE DANS LA BD");
+            }
+            pvRepository.findAll().forEach(System.out::println);
